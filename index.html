@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartEdu SMP All Grade - Aziz Sopandi</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0d9488;
+            --accent: #f59e0b;
+            --danger: #dc2626;
+            --success: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.7rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .admin-btn-top {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .admin-btn-top:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 850px;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Form & Input */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .btn-main {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-main:hover {
+            background-color: #0f766e;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        /* Grid Selection */
+        .grid-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-grid-item {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            font-weight: bold;
+        }
+
+        .btn-grid-item:hover {
+            background-color: #0f766e;
+            transform: translateY(-2px);
+        }
+
+        /* Quiz Styles */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-option {
+            background-color: #f8fafc;
+            border: 2px solid #cbd5e1;
+            padding: 12px 15px;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .btn-option.correct {
+            background-color: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .btn-option.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e0f2fe;
+            border-left: 4px solid #0284c7;
+            font-size: 0.9rem;
+            display: none;
+            border-radius: 4px;
+        }
+
+        .btn-next {
+            margin-top: 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            float: right;
+            display: none;
+        }
+
+        /* Sertifikat Container */
+        .certificate {
+            border: 8px solid var(--primary);
+            padding: 30px;
+            text-align: center;
+            background: #fff;
+            position: relative;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        .certificate h2 {
+            font-family: 'Georgia', serif;
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .certificate h3 {
+            color: var(--accent);
+            font-weight: normal;
+            margin-top: 0;
+        }
+
+        .cert-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+            display: inline-block;
+            padding: 0 30px;
+            margin: 10px 0;
+        }
+
+        .cert-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--secondary);
+            margin: 15px 0;
+        }
+
+        .cert-status {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            font-size: 0.85rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Admin Table */
+        .table-container {
+            overflow-x: auto;
+            max-height: 300px;
+            margin-top: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border-bottom: 1px solid #cbd5e1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f1f5f9;
+        }
+
+        .settings-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+
+        footer span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-screen, #certificate-screen * {
+                visibility: visible;
+            }
+            #certificate-screen {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SmartEdu SMP (Kelas 7, 8, & 9)</h1>
+        <p>Game Pembelajaran Interaktif Semua Mata Pelajaran</p>
+        <button class="admin-btn-top" onclick="openAdminLogin()">🔒 Panel Admin</button>
+    </header>
+
+    <main>
+        <div class="container">
+            
+            <!-- SCREEN 1: INPUT IDENTITAS SISWA -->
+            <div id="user-screen" class="screen active">
+                <h2>Selamat Datang Siswa/i SMP!</h2>
+                <p>Masukkan identitas lengkap Anda untuk mulai bermain.</p>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="username">Nama Lengkap:</label>
+                    <input type="text" id="username" placeholder="Contoh: Salsabila Zahra">
+                </div>
+                <button class="btn-main" onclick="goToClassSelection()">Lanjut Pilih Kelas 🚀</button>
+            </div>
+
+            <!-- SCREEN 2: PILIH KELAS -->
+            <div id="class-screen" class="screen">
+                <h2>Halo, <span id="display-name" style="color: var(--secondary);"></span>!</h2>
+                <p>Pilih Tingkat Kelas Anda:</p>
+                <div class="grid-options">
+                    <button class="btn-grid-item" onclick="selectClass('Kelas 7')">🎓 Kelas 7</button>
+                    <button class="btn-grid-item" onclick="selectClass('Kelas 8')">🎓 Kelas 8</button>
+                    <button class="btn-grid-item" onclick="selectClass('Kelas 9')">🎓 Kelas 9</button>
+                </div>
+                <button class="btn-main btn-danger" onclick="backToUserScreen()" style="margin-top: 25px; width: auto; padding: 8px 15px;">Kembali</button>
+            </div>
+
+            <!-- SCREEN 3: PILIH MATA PELAJARAN -->
+            <div id="home-screen" class="screen">
+                <h2>Pilih Mata Pelajaran (<span id="display-class" style="color: var(--secondary);"></span>):</h2>
+                <p>Tersedia 15 soal komprehensif beserta pembahasannya:</p>
+                <div class="grid-options">
+                    <button class="btn-grid-item" onclick="startQuiz('matematika')">📐 Matematika</button>
+                    <button class="btn-grid-item" onclick="startQuiz('ipa')">🧪 IPA</button>
+                    <button class="btn-grid-item" onclick="startQuiz('ips')">🌍 IPS</button>
+                    <button class="btn-grid-item" onclick="startQuiz('bindonesia')">📚 Bahasa Indonesia</button>
+                    <button class="btn-grid-item" onclick="startQuiz('binggris')">🇬🇧 Bahasa Inggris</button>
+                    <button class="btn-grid-item" onclick="startQuiz('pkn')">🇮🇩 Pend. Pancasila</button>
+                    <button class="btn-grid-item" onclick="startQuiz('agama')">☪️ Agama Islam</button>
+                </div>
+                <button class="btn-main btn-danger" onclick="backToClassSelection()" style="margin-top: 25px; width: auto; padding: 8px 15px;">Ganti Kelas</button>
+            </div>
+
+            <!-- SCREEN 4: KUIS INTERAKTIF -->
+            <div id="quiz-screen" class="screen">
+                <div class="quiz-header">
+                    <span id="subject-title" style="font-weight: bold; color: var(--secondary);">Mata Pelajaran</span>
+                    <span id="question-counter">Soal 1 dari 15</span>
+                </div>
+                <div class="question-text" id="question-text">Pertanyaan...</div>
+                <div class="options-list" id="options-list"></div>
+                <div class="explanation" id="explanation"></div>
+                <button class="btn-next" id="btn-next" onclick="nextQuestion()">Lanjut ➡️</button>
+            </div>
+
+            <!-- SCREEN 5: SERTIFIKAT & SKOR AKHIR -->
+            <div id="certificate-screen" class="screen">
+                <div class="certificate">
+                    <h2>SERTIFIKAT HASIL BELAJAR</h2>
+                    <h3>Diberikan kepada:</h3>
+                    <div class="cert-name" id="cert-student-name">Nama Siswa</div>
+                    <p>Jenjang: <span id="cert-student-class">-</span></p>
+                    <p>Telah menyelesaikan evaluasi mata pelajaran <br><strong id="cert-subject" style="color: var(--primary);">Matematika</strong>:</p>
+                    
+                    <div id="cert-status-badge" class="cert-status">STATUS</div>
+                    <div class="cert-score">SKOR AKHIR: <span id="cert-final-score">0</span> / 100</div>
+                    
+                    <div class="cert-footer">
+                        <div>
+                            <p>Program Edukasi SMP Terpadu</p>
+                        </div>
+                        <div>
+                            <p>Karya & Pengembang:<br><strong>Aziz Sopandi</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group no-print">
+                    <button class="btn-main" onclick="window.print()" style="background-color: var(--primary);">🖨️ Cetak / Unduh Sertifikat</button>
+                    <button class="btn-main" onclick="backToSubjects()">Pilih Pelajaran Lain</button>
+                </div>
+            </div>
+
+            <!-- SCREEN 6: LOGIN ADMIN -->
+            <div id="admin-login-screen" class="screen">
+                <h2>Login Panel Admin Pemantau</h2>
+                <p>Masukkan sandi admin untuk mengakses laporan dan pengaturan sistem.</p>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="admin-pass">Kata Sandi (Default: <code>admin123</code>):</label>
+                    <input type="password" id="admin-pass" placeholder="Masukkan password...">
+                </div>
+                <button class="btn-main" onclick="verifyAdmin()">Masuk Dashboard</button>
+                <button class="btn-main btn-danger" onclick="backToUserScreen()" style="margin-top: 10px;">Kembali ke Beranda</button>
+            </div>
+
+            <!-- SCREEN 7: DASHBOARD ADMIN PEMANTAU & SETTING -->
+            <div id="admin-dashboard-screen" class="screen">
+                <h2>⚙️ Dashboard & Pengaturan Admin</h2>
+                
+                <div class="settings-box">
+                    <strong>Pengaturan Sistem Kuis:</strong>
+                    <div style="display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="font-size: 0.85rem; font-weight: bold;">Standar Kelulusan (Passing Grade):</label>
+                            <input type="number" id="setting-passing-grade" min="0" max="100" style="padding: 6px; margin-top: 5px;">
+                        </div>
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="font-size: 0.85rem; font-weight: bold;">Mode Tampilan Soal:</label>
+                            <select id="setting-question-mode" style="padding: 6px; margin-top: 5px;">
+                                <option value="normal">Berurutan (Normal)</option>
+                                <option value="random">Acak (Randomized)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-main" onclick="saveAdminSettings()" style="width: auto; padding: 8px 15px; margin-top: 10px; font-size: 0.9rem;">Simpan Pengaturan</button>
+                </div>
+
+                <h3>📊 Rekapitulasi Nilai & Aktivitas Siswa</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Waktu</th>
+                                <th>Nama</th>
+                                <th>Kelas</th>
+                                <th>Pelajaran</th>
+                                <th>Skor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body">
+                            <!-- Data dimuat dinamis -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn-main btn-danger" onclick="clearData()">🗑️ Hapus Semua Data Log</button>
+                    <button class="btn-main" onclick="backToUserScreen()">Tutup / Keluar Admin</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>Aplikasi Pembelajaran Interaktif SMP | Pengembang: <span>Aziz Sopandi</span></p>
+    </footer>
+
+    <script>
+        // PENGATURAN DEFAULT ADMIN (TERSIMPAN DI LOCALSTORAGE)
+        let adminSettings = JSON.parse(localStorage.getItem('smartedu_allgrade_settings')) || {
+            passingGrade: 75,
+            questionMode: 'normal'
+        };
+
+        // DATABASE 15 SOAL LENGKAP UNTUK KELAS 7, 8, DAN 9 (DIWAKILI DENGAN BANK SOAL KOMPREHENSIF)
+        const quizData = {
+            matematika: [
+                {q: "Hasil dari -15 + 28 - (-5) adalah...", options: ["18", "-18", "38", "8"], answer: 0, explanation: "-15 + 28 = 13, lalu 13 - (-5) = 13 + 5 = 18."},
+                {q: "Bentuk aljabar dari 'suatu bilangan x dikalikan 3 kemudian dikurangi 5' adalah...", options: ["3x + 5", "3(x - 5)", "3x - 5", "5x - 3"], answer: 2, explanation: "Bilangan x dikalikan 3 (3x) dikurangi 5 menjadi 3x - 5."},
+                {q: "Penyelesaian dari persamaan linear 2x + 4 = 12 adalah...", options: ["x = 2", "x = 4", "x = 6", "x = 8"], answer: 1, explanation: "2x = 12 - 4 => 2x = 8 => x = 4."},
+                {q: "Nilai dari 2³ × 2² adalah...", options: ["8", "16", "32", "64"], answer: 2, explanation: "Sifat eksponen: 2^(3+2) = 2^5 = 32."},
+                {q: "Jika sebuah segitiga memiliki alas 10 cm dan tinggi 8 cm, maka luasnya adalah...", options: ["40 cm²", "80 cm²", "20 cm²", "60 cm²"], answer: 0, explanation: "Luas = 1/2 × alas × tinggi = 1/2 × 10 × 8 = 40 cm²."},
+                {q: "Akar kuadrat dari 196 adalah...", options: ["12", "13", "14", "15"], answer: 2, explanation: "14 × 14 = 196."},
+                {q: "Hasil dari operasi bentuk akar √75 + √12 adalah...", options: ["7√3", "5√3", "9√3", "6√3"], answer: 0, explanation: "√25×3 + √4×3 = 5√3 + 2√3 = 7√3."},
+                {q: "Rumus untuk mencari keliling lingkaran dengan jari-jari r adalah...", options: ["π × r²", "2 × π × r", "4 × r", "π × d²"], answer: 1, explanation: "Keliling lingkaran adalah 2πr."},
+                {q: "Gradien garis yang melalui persamaan y = 3x + 5 adalah...", options: ["3", "5", "-3", "-5"], answer: 0, explanation: "Persamaan y = mx + c memiliki gradien m, jadi m = 3."},
+                {q: "Berapakah hasil dari 25% dari 200?", options: ["25", "50", "75", "100"], answer: 1, explanation: "25/100 × 200 = 50."},
+                {q: "Faktorisasi prima dari 72 adalah...", options: ["2³ × 3²", "2² × 3³", "2^4 × 3", "2 × 3^4"], answer: 0, explanation: "72 = 8 × 9 = 2³ × 3²."},
+                {q: "Sebuah kubus mempunyai panjang rusuk 6 cm. Volume kubus tersebut adalah...", options: ["216 cm³", "36 cm³", "108 cm³", "144 cm³"], answer: 0, explanation: "Volume kubus = r³ = 6 × 6 × 6 = 216 cm³."},
+                {q: "Nilai x yang memenuhi persamaan 3x - 2 = 10 adalah...", options: ["x = 2", "x = 3", "x = 4", "x = 5"], answer: 2, explanation: "3x = 12 => x = 4."},
+                {q: "Jika titik A(2, 3) direfleksikan terhadap sumbu-X, maka koordinat bayangannya adalah...", options: ["(-2, 3)", "(2, -3)", "(-2, -3)", "(3, 2)"], answer: 1, explanation: "Refleksi sumbu-X membuat koordinat y menjadi berlawanan tanda: (2, -3)."},
+                {q: "Mean (rata-rata) dari data 7, 8, 5, 6, 9 adalah...", options: ["6", "7", "7.5", "8"], answer: 1, explanation: "Jumlah data = 35, dibagi 5 data = 7."}
+            ],
+            ipa: [
+                {q: "Besaran pokok dalam sistem internasional (SI) adalah...", options: ["Luas, Volume, Massa", "Panjang, Massa, Waktu", "Suhu, Kecepatan, Gaya", "Kuat arus, Volume, Panjang"], answer: 1, explanation: "Tujuh besaran pokok: Panjang, Massa, Waktu, Suhu, Kuat Arus, Intensitas Cahaya, Jumlah Zat."},
+                {q: "Bagian sel tumbuhan yang berfungsi sebagai tempat fotosintesis adalah...", options: ["Mitokondria", "Vakuola", "Kloroplas", "Ribosom"], answer: 2, explanation: "Kloroplas mengandung klorofil untuk fotosintesis."},
+                {q: "Perubahan wujud zat dari cair menjadi gas dinamakan...", options: ["Mencair", "Menguap", "Menyublim", "Mengembun"], answer: 1, explanation: "Zat cair berubah menjadi gas disebut menguap."},
+                {q: "Hukum Newton I dikenal juga sebagai hukum tentang...", options: ["Kelembaman (Inersia)", "Percepatan", "Aksi-Reaksi", "Kekekalan Energi"], answer: 0, explanation: "Hukum I Newton menyatakan kecenderungan benda mempertahankan keadaan geraknya."},
+                {q: "Alat optik yang prinsip kerjanya menyerupai cara kerja mata manusia adalah...", options: ["Mikroskop", "Kamera", "Periskop", "Lup"], answer: 1, explanation: "Kamera menggunakan lensa cembung dan diafragma yang mirip struktur mata."},
+                {q: "Organel sel yang berfungsi sebagai penghasil energi (ATP) adalah...", options: ["Mitokondria", "Nukleus", "Ribosom", "Lisosom"], answer: 0, explanation: "Mitokondria adalah pusat respirasi sel penghasil energi."},
+                {q: "Penyakit pada sistem peredaran darah di mana sel darah merah kekurangan hemoglobin disebut...", options: ["Hipertensi", "Anemia", "Leukemia", "Hemofilia"], answer: 1, explanation: "Anemia atau kurang darah disebabkan rendahnya kadar Hb atau eritrosit."},
+                {q: "Zat makanan yang berfungsi sebagai sumber energi utama bagi tubuh adalah...", options: ["Protein", "Karbohidrat", "Vitamin", "Mineral"], answer: 1, explanation: "Karbohidrat merupakan sumber energi utama harian tubuh."},
+                {q: "Lapisan atmosfer tempat terjadinya cuaca, awan, dan hujan adalah...", options: ["Troposfer", "Stratosfer", "Mesosfer", "Termosfer"], answer: 0, explanation: "Troposfer adalah lapisan atmosfer terbawah tempat dinamika cuaca berlangsung."},
+                {q: "Sifat bayangan yang dibentuk oleh cermin datar adalah...", options: ["Nyata, terbalik", "Maya, tegak, sama besar", "Nyata, diperbesar", "Maya, diperkecil"], answer: 1, explanation: "Cermin datar selalu menghasilkan bayangan maya, tegak, dan sama besar."},
+                {q: "Komponen biotik dalam ekosistem yang berperan sebagai pengurai adalah...", options: ["Tumbuhan hijau", "Bakteri dan jamur", "Hewan herbivora", "Hewan karnivora"], answer: 1, explanation: "Pengurai (dekomposer) seperti bakteri dan jamur menguraikan sisa organisme."},
+                {q: "Pewarisan sifat pada makhluk hidup dikendalikan oleh materi genetik yang terdapat di dalam...", options: ["Sitoplasma", "Nukleus (Inti Sel)", "Vakuola", "Dinding sel"], answer: 1, explanation: "DNA dan kromosom pembawa sifat terletak di dalam inti sel (nukleus)."},
+                {q: "Besaran turunan dalam fisika contohnya adalah...", options: ["Massa", "Suhu", "Kecepatan", "Waktu"], answer: 2, explanation: "Kecepatan diturunkan dari besaran panjang dan waktu (m/s)."},
+                {q: "Bahan kimia alami yang biasa digunakan sebagai pewarna hijau pada makanan adalah...", options: ["Kunyit", "Daun suji / pandan", "Buah naga", "Gula merah"], answer: 1, explanation: "Daun pandan atau suji menghasilkan pigmen hijau alami (klorofil)."},
+                {q: "Proses pernapasan dada melibatkan kontraksi otot...", options: ["Diafragma", "Antar tulang rusuk", "Perut", "Jantung"], answer: 1, explanation: "Pernapasan dada digerakkan oleh otot antar tulang rusuk."}
+            ],
+            ips: [
+                {q: "Letak suatu wilayah berdasarkan garis lintang dan bujur disebut...", options: ["Letak Geografis", "Letak Geologis", "Letak Astronomis", "Letak Geomorfologis"], answer: 2, explanation: "Letak astronomis didasarkan pada garis lintang dan garis bujur."},
+                {q: "Tindakan manusia yang didorong oleh keinginan memenuhi kebutuhan hidupnya disebut...", options: ["Tindakan Ekonomi", "Motif Ekonomi", "Prinsip Ekonomi", "Hukum Ekonomi"], answer: 1, explanation: "Motif ekonomi adalah dorongan dasar bertindak ekonomi."},
+                {q: "Sumber daya alam yang tidak dapat diperbaharui contohnya adalah...", options: ["Air", "Tanah", "Minyak Bumi", "Tumbuhan"], answer: 2, explanation: "Minyak bumi terbentuk jutaan tahun dan akan habis jika dieksploitasi terus."},
+                {q: "Organisasi pergerakan nasional pertama di Indonesia yang berdiri pada 20 Mei 1908 adalah...", options: ["Budi Utomo", "Sarekat Islam", "Indische Partij", "PNI"], answer: 0, explanation: "Budi Utomo didirikan oleh Dr. Soetomo dan para pelajar STOVIA."},
+                {q: "Perjanjian yang mengakhiri kekuasaan Belanda dan menyerahkan Indonesia kepada Jepang tahun 1942 adalah...", options: ["Perjanjian Linggarjati", "Kapitulasi Kalijati", "Perjanjian Renville", "KMB"], answer: 1, explanation: "Kapitulasi Kalijati ditandatangani di Subang pada 8 Maret 1942."},
+                {q: "Bentuk muka bumi berupa daratan luas yang menjorok ke laut disebut...", options: ["Teluk", "Semenanjung", "Selat", "Dataran Tinggi"], answer: 1, explanation: "Semenanjung (tanjung besar) adalah daratan yang menjorok ke laut."},
+                {q: "Kegiatan menyalurkan barang dari produsen ke konsumen disebut...", options: ["Produksi", "Konsumsi", "Distribusi", "Ekspor"], answer: 1, explanation: "Distribusi adalah proses penyaluran barang dan jasa ke tangan konsumen."},
+                {q: "Faktor utama penyebab keragaman budaya di Indonesia adalah...", options: ["Satu suku bangsa", "Letak geografis kepulauan", "Satu bahasa nasional", "Iklim yang seragam"], answer: 1, explanation: "Kondisi wilayah kepulauan yang terisolasi memicu keragaman suku dan budaya."},
+                {q: "Peristiwa Rengasdengklok menjelang Proklamasi 1945 melibatkan kelompok...", options: ["Golongan Tua", "Golongan Muda", "Pemerintah Jepang", "Tentara Sekutu"], answer: 1, explanation: "Golongan muda menculik Soekarno-Hatta agar segera memproklamasikan kemerdekaan."},
+                {q: "Ilmu yang mempelajari tentang kependudukan dan dinamikanya disebut...", options: ["Geografi", "Demografi", "Sosiologi", "Ekonomi"], answer: 1, explanation: "Demografi mempelajari ukuran, struktur, dan distribusi penduduk."},
+                {q: "Masa demokrasi parlementer di Indonesia ditandai dengan sering bergantinya...", options: ["Presiden", "Kabinet / Perdana Menteri", "Undang-Undang", "Ibu Kota Negara"], answer: 1, explanation: "Kabinet sering jatuh bangun karena mosi tidak percaya di parlemen."},
+                {q: "Perdagangan antara dua negara atau lebih disebut perdagangan...", options: ["Lokal", "Domestik", "Internasional / Ekspor-Impor", "Barter"], answer: 2, explanation: "Perdagangan internasional melibatkan lintas batas negara."},
+                {q: "Lembaga sosial yang mengatur tata tertib kehidupan keluarga adalah...", options: ["Lembaga Agama", "Lembaga Keluarga", "Lembaga Ekonomi", "Lembaga Politik"], answer: 1, explanation: "Lembaga keluarga merupakan unit sosial terkecil masyarakat."},
+                {q: "Pernyataan yang benar mengenai kelangkaan adalah...", options: ["Barang selalu tersedia bebas", "Alat pemuas kebutuhan terbatas sementara kebutuhan tak terbatas", "Uang tidak ada harganya", "Semua orang kaya"], answer: 1, explanation: "Kelangkaan terjadi karena sumber daya terbatas dan kebutuhan tak terbatas."},
+                {q: "ASEAN didirikan pada tanggal 8 Agustus 1967 berdasarkan Deklarasi...", options: ["Bangkok", "Jakarta", "Kuala Lumpur", "Manila"], answer: 0, explanation: "Deklarasi Bangkok ditandatangani oleh 5 negara pendiri ASEAN."}
+            ],
+            bindonesia: [
+                {q: "Teks yang berisi langkah-langkah melakukan sesuatu secara berurutan disebut teks...", options: ["Deskripsi", "Prosedur", "Laporan", "Eksposisi"], answer: 1, explanation: "Teks prosedur menyajikan panduan langkah demi langkah."},
+                {q: "Kalimat perintah dalam teks prosedur umumnya menggunakan jenis kalimat...", options: ["Deklaratif", "Interogatif", "Imperatif", "Eksklamatif"], answer: 2, explanation: "Kalimat imperatif berfungsi memberikan perintah atau suruhan."},
+                {q: "Unsur intrinsik cerita fantasi yang memuat latar tempat, waktu, dan suasana disebut...", options: ["Alur", "Latar", "Tokoh", "Amanat"], answer: 1, explanation: "Latar (setting) menjelaskan tempat, waktu, dan suasana kejadian."},
+                {q: "Gagasan utama atau ide pokok dalam sebuah paragraf biasanya terletak di...", options: ["Kalimat utama", "Kalimat penjelas", "Akhir paragraf saja", "Judul bacaan"], answer: 0, explanation: "Gagasan pokok didukung oleh kalimat utama."},
+                {q: "Puisi rakyat yang terdiri atas empat baris bersajak a-b-a-b disebut...", options: ["Gurindam", "Karmina", "Pantun", "Seloka"], answer: 2, explanation: "Pantun memiliki 4 baris dengan rima akhir a-b-a-b."},
+                {q: "Struktur teks ulasan (resensi) yang berisi penilaian kelebihan dan kekurangan karya disebut...", options: ["Orientasi", "Tafsiran", "Evaluasi", "Rangkuman"], answer: 2, explanation: "Evaluasi memuat penilaian terhadap karya yang diulas."},
+                {q: "Imbuhan meN- pada kata 'menyapu' mengalami proses...", options: ["Peleburan huruf s", "Penyengauan", "Penambahan huruf", "Peluluhan huruf m"], answer: 0, explanation: "Awalan meN- bertemu huruf s meluluh menjadi 'menyapu'."},
+                {q: "Sinonim dari kata 'teliti' adalah...", options: ["Ceroboh", "Cermat", "Lambat", "Sembrono"], answer: 1, explanation: "Cermat memiliki arti yang sama dengan teliti."},
+                {q: "Surat dinas berbeda dengan surat pribadi karena surat dinas bersifat...", options: ["Santai", "Resmi / Formal", "Rahasia keluarga", "Pribadi"], answer: 1, explanation: "Surat dinas diterbitkan oleh instansi resmi untuk keperluan formal."},
+                {q: "Bagian akhir dari sebuah cerita yang berisi pesan moral disebut...", options: ["Resolusi", "Koda", "Orientasi", "Komplikasi"], answer: 1, explanation: "Koda adalah bagian penutup berisi pesan moral cerita."},
+                {q: "Penulisan huruf kapital yang tepat terdapat pada kalimat...", options: ["ibu pergi ke pasar lembang.", "Budi berasal dari kota bandung.", "Ayah membeli mobil dari Jepang.", "Kami berlibur ke selat sunda."], answer: 2, explanation: "Nama negara/kebangsaan 'Jepang' diawali huruf kapital dengan benar."},
+                {q: "Teks laporan hasil observasi berisi informasi yang bersifat...", options: ["Fiktif / Khayalan", "Objektif dan faktual", "Pendapat pribadi semata", "Persuasif rayuan"], answer: 1, explanation: "LHO harus disusun berdasarkan fakta dan objek nyata yang diamati."},
+                {q: "Majas yang melukiskan sesuatu dengan penggantian nama atribut disebut majas...", options: ["Personifikasi", "Metafora", "Metonimia", "Hiperbola"], answer: 2, explanation: "Metonimia menggunakan merk atau atribut benda untuk menyebut benda aslinya."},
+                {q: "Kata baku dari 'apotik' yang benar sesuai KBBI adalah...", options: ["Apotik", "Apotek", "Epotik", "Oppotik"], answer: 1, explanation: "Baku dalam KBBI adalah apotek."},
+                {q: "Unsur intrinsik yang menjadi pusat cerita atau gagasan dasar pengarang disebut...", options: ["Alur", "Tema", "Amanat", "Latar"], answer: 1, explanation: "Tema adalah ide atau gagasan utama yang mendasari keseluruhan cerita."}
+            ],
+            binggris: [
+                {q: "Choose the correct morning greeting:", "options": ["Good afternoon", "Good morning", "Good evening", "Good night"], "answer": 1, explanation: "'Good morning' is used in the morning."},
+                {q: "My mother is cooking in the...", "options": ["Bathroom", "Bedroom", "Kitchen", "Garage"], "answer": 2, explanation: "Cooking takes place in the kitchen."},
+                {q: "The English word for 'Buku Tulis' is...", "options": ["Textbook", "Notebook", "Dictionary", "Novel"], "answer": 1, explanation: "Notebook means buku tulis."},
+                {q: "Complete the sentence: 'There ... seven days in a week.'", "options": ["is", "are", "am", "be"], "answer": 1, explanation: "Seven days is plural, so we use 'are'."},
+                {q: "What is the opposite of 'big'?", "options": ["Tall", "Small", "Long", "Fast"], "answer": 1, explanation: "Small is the opposite of big."},
+                {q: "He ... a student of SMP.", "options": ["am", "is", "are", "be"], "answer": 1, explanation: "Subject 'He' uses 'is'."},
+                {q: "What is the past tense of 'go'?", "options": ["Goed", "Gone", "Went", "Going"], "answer": 2, explanation: "Past tense of go is went."},
+                {q: "Which one is an animal that lives in water?", "options": ["Cat", "Bird", "Fish", "Lion"], "answer": 2, explanation: "Fish lives in water."},
+                {q: "Choose the correct pronoun for a girl:", "options": ["He", "She", "It", "They"], "answer": 1, explanation: "She is the pronoun for female."},
+                {q: "What do you say when you make a mistake?", "options": ["Thank you", "I am sorry", "Good morning", "Goodbye"], "answer": 1, explanation: "We say 'I am sorry' to apologize."},
+                {q: "The antonym of 'hot' is...", "options": ["Warm", "Cold", "Cool", "Dry"], "answer": 1, explanation: "Cold is the opposite of hot."},
+                {q: "My father's daughter is my...", "options": ["Sister", "Brother", "Aunt", "Cousin"], "answer": 0, explanation: "Father's daughter is a sister."},
+                {q: "What color is a banana when it is ripe?", "options": ["Red", "Blue", "Yellow", "Green"], "answer": 2, explanation: "Ripe bananas are yellow."},
+                {q: "We use a ... to write on a paper.", "options": ["Pencil / Pen", "Spoon", "Plate", "Key"], "answer": 0, explanation: "A pen or pencil is used for writing."},
+                {q: "Which month comes after January?", "options": ["March", "February", "December", "April"], "answer": 1, explanation: "February comes right after January."}
+            ],
+            pkn: [
+                {q: "Sidang pertama BPUPKI (29 Mei - 1 Juni 1945) membahas tentang...", options: ["UUD 1945", "Dasar Negara", "Bentuk Negara", "Teks Proklamasi"], answer: 1, explanation: "Agenda utamanya adalah perumusan dasar negara (Pancasila)."},
+                {q: "Norma yang sanksinya berupa rasa menyesal dari hati nurani adalah...", options: ["Norma Kesusilaan", "Norma Kesopanan", "Norma Hukum", "Norma Agama"], answer: 0, explanation: "Norma kesusilaan bersumber dari hati nurani."},
+                {q: "Bhinneka Tunggal Ika memiliki arti...", options: ["Bersatu kita teguh", "Berbeda-beda tetapi tetap satu jua", "Tanpa persatuan kita runtuh", "Negara kuat karena persatuan"], answer: 1, explanation: "Semboyan negara berbeda-beda tetapi tetap satu jua."},
+                {q: "Pancasila ditetapkan sebagai Dasar Negara pada tanggal...", options: ["17 Agustus 1945", "18 Agustus 1945", "1 Juni 1945", "29 Mei 1945"], answer: 1, explanation: "PPKI mengesahkan UUD 1945 dan Pancasila pada 18 Agustus 1945."},
+                {q: "Sanksi bagi pelanggar norma hukum bersifat...", options: ["Tidak tegas", "Hanya teguran", "Nyata, tegas, dan mengikat", "Peringatan batin saja"], answer: 2, explanation: "Norma hukum memiliki sanksi tegas berupa denda atau penjara."},
+                {q: "Tokoh yang mengusulkan nama 'Pancasila' pada sidang BPUPKI adalah...", options: ["Ir. Soekarno", "Moh. Hatta", "Mr. Soepomo", "Ki Hajar Dewantara"], answer: 0, explanation: "Ir. Soekarno mengusulkan istilah Pancasila pada pidato 1 Juni 1945."},
+                {q: "Gotong royong merupakan cerminan dari nilai Pancasila sila ke...", options: ["Sila ke-2", "Sila ke-3", "Sila ke-4", "Sila ke-5"], answer: 1, explanation: "Gotong royong mencerminkan persatuan Indonesia (Sila ke-3)."},
+                {q: "Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 disahkan oleh...", options: ["BPUPKI", "PPKI", "Presiden", "DPR"], answer: 1, explanation: "PPKI mengesahkannya menjadi konstitusi."},
+                {q: "Perilaku menghargai pendapat orang lain saat musyawarah sesuai dengan sila...", options: ["Sila ke-2", "Sila ke-3", "Sila ke-4", "Sila ke-5"], answer: 2, explanation: "Sila ke-4 mengatur tentang musyawarah mufakat."},
+                {q: "Semboyan Bhinneka Tunggal Ika diambil dari Kitab Sutasoma karya...", options: ["Mpu Prapanca", "Mpu Tantular", "Mpu Gandring", "Mpu Panuluh"], answer: 1, explanation: "Kitab Sutasoma dikarang oleh Mpu Tantular."},
+                {q: "Undang-Undang dasar negara yang sah dan berlaku di Indonesia saat ini adalah UUD...", options: ["1945", "RIS 1949", "UUDS 1950", "Konstitusi Konstituante"], answer: 0, explanation: "UUD 1945 adalah konstitusi negara Republik Indonesia."},
+                {q: "Lembaga negara yang berwenang mengubah dan menetapkan UUD adalah...", options: ["DPR", "MPR", "Mahkamah Konstitusi", "Presiden"], answer: 1, explanation: "MPR berwenang mengubah dan menetapkan Undang-Undang Dasar."},
+                {q: "Sikap positif terhadap Pancasila dalam kehidupan bernegara dapat diwujudkan melalui...", options: ["Menaati hukum dan peraturan", "Acuh tak acuh", "Mementingkan golongan sendiri", "Melanggar norma"], answer: 0, explanation: "Menaati hukum adalah wujud nyata cinta tanah air dan Pancasila."},
+                {q: "Kedaulatan berada di tangan rakyat dan dilaksanakan menurut Undang-Undang Dasar, bunyi UUD 1945 pasal...", options: ["Pasal 1 ayat (1)", "Pasal 1 ayat (2)", "Pasal 2 ayat (1)", "Pasal 3 ayat (1)"], answer: 1, explanation: "Pasal 1 ayat (2) UUD 1945 menegaskan kedaulatan di tangan rakyat."},
+                {q: "Bentuk negara Indonesia berdasarkan UUD 1945 adalah...", options: ["Serikat", "Kesatuan", "Dominion", "Monarki"], answer: 1, explanation: "Bentuk negara Indonesia adalah Negara Kesatuan Republik Indonesia (NKRI)."}
+            ],
+            agama: [
+                {q: "Sifat wajib Allah SWT yang berarti 'Maha Mengetahui' adalah...", options: ["Al-Alim", "As-Sami", "Al-Bashir", "Al-Khabir"], answer: 0, explanation: "Al-Alim artinya Allah Maha Mengetahui."},
+                {q: "Salat sunnah yang mengiringi salat fardhu dikerjakan sesudahnya disebut...", options: ["Qabliyah", "Ba'diyah", "Tahiyyatul Masjid", "Dhuha"], answer: 1, explanation: "Ba'diyah adalah salat sunnah rawatib sesudah fardhu."},
+                {q: "Malaikat yang bertugas meniup sangkakala tanda kiamat adalah...", options: ["Jibril", "Mikail", "Israfil", "Izrail"], answer: 2, explanation: "Malaikat Israfil bertugas meniup sangkakala."},
+                {q: "Kitab suci yang diturunkan kepada Nabi Isa AS adalah...", options: ["Taurat", "Zabur", "Injil", "Al-Qur'an"], answer: 2, explanation: "Kitab Injil diturunkan kepada Nabi Isa AS."},
+                {q: "Meyakini dalam hati, mengucapkan dengan lisan, dan mengamalkan dengan perbuatan adalah arti dari...", options: ["Islam", "Ihsan", "Iman", "Takwa"], answer: 2, explanation: "Definisi iman yang utuh mencakup keyakinan, lisan, dan amal."},
+                {q: "Sifat mustahil bagi rasul yang berarti berdusta atau bohong adalah...", options: ["Kadzib", "Khianat", "Kitman", "Baladah"], answer: 0, explanation: "Kadzib artinya berdusta (mustahil bagi rasul)."},
+                {q: "Perilaku jujur dalam agama Islam disebut dengan istilah...", options: ["Amanah", "Shiddiq", "Fathanah", "Tabligh"], answer: 1, explanation: "Shiddiq artinya benar atau jujur."},
+                {q: "Salat fardhu dalam sehari semalam dikerjakan sebanyak...", options: ["3 waktu", "4 waktu", "5 waktu", "6 waktu"], answer: 2, explanation: "Salat wajib harian berjumlah 5 waktu."},
+                {q: "Malaikat pencabut nyawa seluruh makhluk hidup adalah...", options: ["Jibril", "Israfil", "Munkar", "Izrail"], answer: 3, explanation: "Malaikat Izrail bertugas mencabut nyawa."},
+                {q: "Sikap rendah hati di hadapan Allah dan sesama manusia disebut...", options: ["Takabur", "Tawadhu", "Riya", "Ujub"], answer: 1, explanation: "Tawadhu adalah sifat rendah hati."},
+                {q: "Hari akhir atau hari kiamat juga dinamakan Yaumul Hisab, yang artinya hari...", options: ["Kebangkitan", "Perhitungan amal", "Pembalasan", "Keputusan"], answer: 1, explanation: "Yaumul Hisab adalah hari perhitungan amal."},
+                {q: "Beriman kepada qada dan qadar termasuk ke dalam rukun...", options: ["Islam", "Iman", "Ihsan", "Syahadat"], answer: 1, explanation: "Iman kepada qada dan qadar adalah rukun iman ke-6."},
+                {q: "Air yang suci dan mensucikan untuk bersuci disebut air...", options: ["Mutanajis", "Mutlak", "Musyammas", "Musta'mal"], answer: 1, explanation: "Air mutlak suci dan sah dipakai bersuci."},
+                {q: "Nabi dan Rasul yang mendapat gelar Ulul Azmi berjumlah...", options: ["3 orang", "4 orang", "5 orang", "25 orang"], answer: 2, explanation: "Ada 5 rasul Ulul Azmi: Nuh, Ibrahim, Musa, Isa, dan Muhammad SAW."},
+                {q: "Perilaku menepati janji dan setia dalam memegang kepercayaan disebut...", options: ["Amanah", "Kianat", "Dusta", "Sombong"], answer: 0, explanation: "Amanah berarti dapat dipercaya dan menepati janji."}
+            ]
+        };
+
+        let studentName = '';
+        let studentClass = '';
+        let currentSubject = '';
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionsList = [];
+
+        // Screen Elements
+        const userScreen = document.getElementById('user-screen');
+        const classScreen = document.getElementById('class-screen');
+        const homeScreen = document.getElementById('home-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const certificateScreen = document.getElementById('certificate-screen');
+        const adminLoginScreen = document.getElementById('admin-login-screen');
+        const adminDashboardScreen = document.getElementById('admin-dashboard-screen');
+
+        const inputName = document.getElementById('username');
+        const displayName = document.getElementById('display-name');
+        const displayClass = document.getElementById('display-class');
+        
+        const subjectTitle = document.getElementById('subject-title');
+        const questionCounter = document.getElementById('question-counter');
+        const questionText = document.getElementById('question-text');
+        const optionsList = document.getElementById('options-list');
+        const explanationBox = document.getElementById('explanation');
+        const btnNext = document.getElementById('btn-next');
+
+        // Sertifikat Elements
+        const certStudentName = document.getElementById('cert-student-name');
+        const certStudentClass = document.getElementById('cert-student-class');
+        const certSubject = document.getElementById('cert-subject');
+        const certFinalScore = document.getElementById('cert-final-score');
+        const certStatusBadge = document.getElementById('cert-status-badge');
+
+        function switchScreen(screenElement) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            screenElement.classList.add('active');
+        }
+
+        function goToClassSelection() {
+            studentName = inputName.value.trim();
+            if (!studentName) {
+                alert("Harap masukkan Nama Lengkap Anda terlebih dahulu!");
+                return;
+            }
+            displayName.innerText = studentName;
+            switchScreen(classScreen);
+        }
+
+        function selectClass(selectedClass) {
+            studentClass = selectedClass;
+            displayClass.innerText = selectedClass;
+            switchScreen(homeScreen);
+        }
+
+        function backToUserScreen() {
+            switchScreen(userScreen);
+        }
+
+        function backToClassSelection() {
+            switchScreen(classScreen);
+        }
+
+        function startQuiz(subject) {
+            currentSubject = subject;
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            let originalQuestions = [...quizData[subject]];
+            
+            if (adminSettings.questionMode === 'random') {
+                questionsList = originalQuestions.sort(() => Math.random() - 0.5);
+            } else {
+                questionsList = originalQuestions;
+            }
+
+            const titles = {
+                matematika: "Matematika",
+                ipa: "Ilmu Pengetahuan Alam (IPA)",
+                ips: "Ilmu Pengetahuan Sosial (IPS)",
+                bindonesia: "Bahasa Indonesia",
+                binggris: "Bahasa Inggris",
+                pkn: "Pendidikan Pancasila",
+                agama: "Pendidikan Agama Islam"
+            };
+            subjectTitle.innerText = titles[subject];
+
+            switchScreen(quizScreen);
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            explanationBox.style.display = 'none';
+            btnNext.style.display = 'none';
+            
+            const currentQ = questionsList[currentQuestionIndex];
+            questionCounter.innerText = `Soal ${currentQuestionIndex + 1} dari ${questionsList.length}`;
+            questionText.innerText = currentQ.q;
+            
+            optionsList.innerHTML = '';
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = `${String.fromCharCode(65 + index)}. ${option}`;
+                btn.onclick = () => selectAnswer(index, btn);
+                optionsList.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedIndex, selectedBtn) {
+            const currentQ = questionsList[currentQuestionIndex];
+            const allButtons = optionsList.querySelectorAll('.btn-option');
+
+            allButtons.forEach(btn => btn.disabled = true);
+
+            const pointPerQuestion = 100 / questionsList.length;
+
+            if (selectedIndex === currentQ.answer) {
+                selectedBtn.classList.add('correct');
+                score += pointPerQuestion;
+            } else {
+                selectedBtn.classList.add('incorrect');
+                allButtons[currentQ.answer].classList.add('correct');
+            }
+
+            explanationBox.innerHTML = `<strong>Pembahasan:</strong> ${currentQ.explanation}`;
+            explanationBox.style.display = 'block';
+
+            if (currentQuestionIndex < questionsList.length - 1) {
+                btnNext.style.display = 'block';
+            } else {
+                btnNext.innerText = 'Lihat Sertifikat & Hasil 🏆';
+                btnNext.style.display = 'block';
+                btnNext.onclick = finishQuizAndSave;
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            btnNext.onclick = nextQuestion;
+            btnNext.innerText = 'Lanjut ➡️';
+            loadQuestion();
+        }
+
+        function finishQuizAndSave() {
+            const finalScoreVal = Math.round(score);
+            const isPassed = finalScoreVal >= adminSettings.passingGrade;
+            
+            const record = {
+                time: new Date().toLocaleString('id-ID'),
+                name: studentName,
+                class: studentClass,
+                subject: subjectTitle.innerText,
+                score: finalScoreVal,
+                status: isPassed ? 'LULUS' : 'REMEDIAL'
+            };
+
+            let logs = JSON.parse(localStorage.getItem('smartedu_allgrade_logs')) || [];
+            logs.unshift(record);
+            localStorage.setItem('smartedu_allgrade_logs', JSON.stringify(logs));
+
+            certStudentName.innerText = studentName;
+            certStudentClass.innerText = studentClass;
+            certSubject.innerText = subjectTitle.innerText;
+            certFinalScore.innerText = finalScoreVal;
+
+            if (isPassed) {
+                certStatusBadge.innerText = "✨ STATUS: LULUS (KOMPETEN)";
+                certStatusBadge.style.backgroundColor = "#d1fae5";
+                certStatusBadge.style.color = "#065f46";
+            } else {
+                certStatusBadge.innerText = "⚠️ STATUS: BELUM LULUS (PERLU REMEDIAL)";
+                certStatusBadge.style.backgroundColor = "#fee2e2";
+                certStatusBadge.style.color = "#991b1b";
+            }
+
+            switchScreen(certificateScreen);
+        }
+
+        function backToSubjects() {
+            switchScreen(homeScreen);
+        }
+
+        // FUNGSI ADMIN & SETTINGS
+        function openAdminLogin() {
+            document.getElementById('admin-pass').value = '';
+            switchScreen(adminLoginScreen);
+        }
+
+        function verifyAdmin() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === 'admin123') {
+                document.getElementById('setting-passing-grade').value = adminSettings.passingGrade;
+                document.getElementById('setting-question-mode').value = adminSettings.questionMode;
+                
+                loadAdminTable();
+                switchScreen(adminDashboardScreen);
+            } else {
+                alert("Kata sandi salah! Gunakan sandi default: admin123");
+            }
+        }
+
+        function saveAdminSettings() {
+            const newPassingGrade = parseInt(document.getElementById('setting-passing-grade').value);
+            const newQuestionMode = document.getElementById('setting-question-mode').value;
+
+            if (isNaN(newPassingGrade) || newPassingGrade < 0 || newPassingGrade > 100) {
+                alert("Masukkan batas kelulusan yang valid (0 - 100).");
+                return;
+            }
+
+            adminSettings.passingGrade = newPassingGrade;
+            adminSettings.questionMode = newQuestionMode;
+
+            localStorage.setItem('smartedu_allgrade_settings', JSON.stringify(adminSettings));
+            alert("Pengaturan sistem admin berhasil disimpan!");
+        }
+
+        function loadAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            
+            let logs = JSON.parse(localStorage.getItem('smartedu_allgrade_logs')) || [];
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #64748b;">Belum ada riwayat pengerjaan siswa yang terekam.</td></tr>`;
+                return;
+            }
+
+            logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${log.time}</td>
+                    <td><strong>${log.name}</strong></td>
+                    <td>${log.class}</td>
+                    <td>${log.subject}</td>
+                    <td><b>${log.score}</b></td>
+                    <td><span style="color: ${log.status === 'LULUS' ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">${log.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearData() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh riwayat log siswa?")) {
+                localStorage.removeItem('smartedu_allgrade_logs');
+                loadAdminTable();
+            }
+        }
+    </script>
+</body>
+</html>
